@@ -5,7 +5,31 @@
   margin: 10px auto 30px;
   padding: 10px;
   width: 80%;
-  height: 1700px;
+  height: 300px;
+  width: 200px;
+  transition: background-color 0.3s;
+}
+
+.main-dropzone {
+  background-color: whitesmoke;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 80%;
+  height: 600px;
+  
+  transition: background-color 0.3s;
+}
+
+.flutter-element {
+  background-color: limegreen;
+  border: dashed 4px transparent;
+  border-radius: 4px;
+  margin: 10px auto 30px;
+  padding: 10px;
+  width: 200px;
+  height: 100px;
   transition: background-color 0.3s;
 }
 
@@ -33,6 +57,17 @@
   transform: translate(0px, 0px);
 
   transition: background-color 0.3s;
+}
+
+.export-button {
+  display: inline-block;
+  min-width: 40px;
+  padding: 2em 0.5em;
+  margin: 1rem 0 0 1rem;
+  border-radius: 10px;
+  color: #fff;
+  background-color: #29e;
+  border: solid 2px #fff;
 }
 
 .drag-drop.can-drop {

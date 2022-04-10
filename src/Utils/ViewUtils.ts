@@ -4,7 +4,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-
 export function getWebViewContent(filename: string):String {
 
     let globalPath = path.join(__dirname, '../../src/');
@@ -20,7 +19,7 @@ declare global{
     }    
 }
 
-String.prototype.injectResources = function (webview: vscode.Webview, context: vscode.ExtensionContext, styles: any = [], scripts: any): string{
+String.prototype.injectResources = function (webview: vscode.Webview, context: vscode.ExtensionContext, styles: any = [], scripts: any = []): string{
 
     var scriptSection = "";
     var styleSection = "";
@@ -35,10 +34,10 @@ String.prototype.injectResources = function (webview: vscode.Webview, context: v
 
     scripts.forEach(element => {
         let scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(
-            context.extensionUri, 'src', 'Views','js', element));
-        scriptSection += "<script type='module' src = " + scriptUri + ">";
+            context.extensionUri, 'src', 'Views','js', element.name));
+        scriptSection += " <script "+(element.isModule ? "type='module'" : "type='text/javascript'")+" src = " + scriptUri + " /> ";
     });
-
+    
     return this.replace('${style_section}', styleSection.toString()).replace('${script_section}', scriptSection.toString());
 }
 

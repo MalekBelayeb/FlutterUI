@@ -8,15 +8,22 @@
 
 <body>
 
-    <div class="draggable"> widget 1 </div>
-    <div class="draggable "> widget 2 </div>
-    <div class="draggable "> widget 3 </div>
+    <div style="display: flex;"> 
+        <div class="flutter-element fuikit-text" > Text </div>
+        <div class="flutter-element fuikit-column" > Column </div>
+        <div class="flutter-element fuikit-row"> Row </div>
+    </div>
     
-    <div id="inner-dropzone" class="droppable">#inner-dropzone</div>
+    <div class="main-dropzone" id="main-dropzone"> Dropzone </div>
+
+    <div class="export-button" id="export-button"> Export </div>
+    <div class="export-button" id="save-button"> Save </div>
+
     
     ${style_section}
-    ${script_section}
 
 </body>
+
+${script_section}
 
 </html>

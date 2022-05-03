@@ -29,7 +29,7 @@ String.prototype.injectResources = function (webview: vscode.Webview, context: v
         let styleUri = webview.asWebviewUri(vscode.Uri.joinPath(
             context.extensionUri, 'src', 'Views','css', element));
         styleSection += "<link rel='stylesheet' href = " + styleUri + ">";
-
+            
     });
 
     scripts.forEach(element => {

@@ -1,25 +1,32 @@
 
 import interact from 'https://cdn.interactjs.io/v1.10.11/interactjs/index.js';
 
-const flutterSkeleton = " import 'package:flutter/material.dart'; class ExportedFUIKit extends StatelessWidget {ExportedFUIKit(); @override Widget build(BuildContext context) {return Scaffold(body: ${{body}},);}}";
+const flutterSkeleton = "import 'package:flutter/material.dart'; \n class ExportedFUIKit extends StatelessWidget {ExportedFUIKit(); @override Widget build(BuildContext context) {return Scaffold(body: ${{body}},);}}";
+const flutterEmptySkeleton = "import 'package:flutter/material.dart'; \n class ExportedFUIKit extends StatelessWidget { \n ExportedFUIKit(); \n @override \n Widget build(BuildContext context) { \n \t \t return Scaffold(body:  Text('')); \n } \n }";
+
+const vscode = acquireVsCodeApi();
+
+
+var projectName = ''
+var projectPath = ''
 
 const flutterElements = [
 
   {
     name: "fuikit-text",
-    code: "Text('lorem ipsum')"
+    code: " \n Text('lorem ipsum') \n"
   },
 
   {
     name: "fuikit-column",
-    code: "Column(children: [${{column_children}}])",
-    tag:"${{column_children}}"
+    code: " \n Column(children: [ \n ${{column_children}} \n ]) \n",
+    tag: "${{column_children}}"
   },
 
   {
     name: "fuikit-row",
-    code: "Row(children: [${{row_children}}])",
-    tag:"${{row_children}}"
+    code: " \n Row(children: [ \n ${{row_children}} \n]) \n ",
+    tag: "${{row_children}}"
   }
 
 ];
@@ -58,7 +65,7 @@ interact('.droppable')
       draggableElement.classList.add('can-drop');
 
       //draggableElement.textContent = 'Dragged in';
-    
+
     },
     ondragleave: function (event) {
 
@@ -78,11 +85,8 @@ interact('.droppable')
 
       dropzoneElement.appendChild(draggableElement);
 
-      console.log(dropzoneElement.children);
-
       var newParentHeight = 60 * dropzoneElement.children.length;
       dropzoneElement.style.height = `${newParentHeight}px`;
-      console.log(document.body);
 
     },
     ondropdeactivate: function (event) {
@@ -94,9 +98,7 @@ interact('.droppable')
 interact('.draggable')
   .draggable({
     inertia: true,
-
     autoScroll: true,
-
     listeners: { move: dragMoveListener }
   });
 
@@ -151,46 +153,84 @@ function invokeVirtualLink(fileName, content) {
 // ken user nzel aal export
 document.getElementById('export-button').addEventListener('click', function () {
 
-  invokeVirtualLink("export.dart", resultOutput);
+  //invokeVirtualLink("export.dart", resultOutput);
+  console.log(projectPath,resultOutput)
+  synchronizeProject(projectPath,resultOutput);
 
 });
 
-
-flutterElements.map(item =>{return item.name;}).forEach((className)=>{
+// ["fuikit-text","fuikit-column","fuikit-row"]
+flutterElements.map(item => { return item.name; }).forEach((className) => {
 
   let element = document.getElementsByClassName(className)[0];
 
   element.addEventListener('click', function () {
-  
+
     const clone = element.cloneNode(true);
     clone.classList.add('draggable');
     clone.classList.add('droppable');
-  
+
     if (document.getElementById("main-dropzone").children.length === 0) {
-  
+
       document.getElementById("main-dropzone").appendChild(clone);
-  
+
     } else {
+
       document.body.appendChild(clone);
-  
+
     }
-  
+
   });
 
 });
+
+document.getElementById('new-project-button').addEventListener('click', () => {
+
+  vscode.postMessage({
+    command: 'NEW_PROJECT',
+    text: ' '
+  });
+
+})
+
+
+window.addEventListener('message', event => {
+
+  const message = event.data; // The JSON data our extension sent
+
+  switch (message.command) {
+
+    case 'ON_PROJECT_CREATED':
+
+      projectPath = message.path
+      projectName = message.name
+
+      synchronizeProject(projectPath, flutterEmptySkeleton)
+
+    break;
+  }
+
+});
+
+
 
 document.getElementById('save-button').addEventListener('click', function () {
 
   var mainDropzone = document.getElementById("main-dropzone");
 
-  mainDropzone.childNodes.forEach((item) => {
-    var parentElement;
 
+  mainDropzone.childNodes.forEach((item) => {
+
+    console.log(item.childNodes)
+
+    var parentElement;
+    
     if (item.className) {
+
       parentElement = getFlutterElement(item.className.split(" ")[1]);
 
       resultOutput = flutterSkeleton.replace('${{body}}', parentElement.code);
-      
+
     }
 
     var children = "";
@@ -198,18 +238,31 @@ document.getElementById('save-button').addEventListener('click', function () {
 
       if (item.className) {
 
-        children+= getFlutterElement(item.className.split(" ")[1]).code+",";
-
+        children += getFlutterElement(item.className.split(" ")[1]).code + ",";
+        // Text("lorem ipsum"), Text("lorem ipsum")
+      
       }
 
     });
-    
-    if (parentElement)
-    {
-      resultOutput = resultOutput.replace(parentElement.tag, children);
+
+    if (parentElement) {
+        resultOutput = resultOutput.replace(parentElement.tag, children);
     }
-    
+
   });
 
 
 });
+
+
+function synchronizeProject(projectPath, content) {
+
+  vscode.postMessage({
+
+    command: 'SYNCHRONIZE_PROJECT',
+    projectPath: projectPath,
+    content: content
+
+  });
+
+}

@@ -6,7 +6,6 @@ const flutterEmptySkeleton = "import 'package:flutter/material.dart'; \n class E
 
 const vscode = acquireVsCodeApi();
 
-
 var projectName = ''
 var projectPath = ''
 
@@ -27,7 +26,24 @@ const flutterElements = [
     name: "fuikit-row",
     code: " \n Row(children: [ \n ${{row_children}} \n]) \n ",
     tag: "${{row_children}}"
+  },
+
+  {
+    name: "fuikit-text-field",
+    code: " TextField( decoration: InputDecoration(border: OutlineInputBorder(),hintText: 'Enter a search term',),), ",
+    tag: ""
+  },
+  {
+    name: "fuikit-button",
+    code: "RaisedButton(onPressed: (){}, child: new Text('Button text ...'),)",
+    tag: "${{button_children}}"
+  },
+  {
+    name: "fuikit-text",
+    code: "Text('Your text here')",
+    tag: ""
   }
+  
 
 ];
 
@@ -49,6 +65,10 @@ function dragMoveListener(event) {
   target.setAttribute('data-y', y);
 
 }
+
+
+var interactedElements = []
+
 
 interact('.droppable')
   .dropzone({
@@ -84,9 +104,14 @@ interact('.droppable')
       draggableElement.style.height = '20px';
 
       dropzoneElement.appendChild(draggableElement);
+      let id = makeId(5)
+      draggableElement.setAttribute('id',id);
+      interactedElements.push(id)
+
 
       var newParentHeight = 60 * dropzoneElement.children.length;
       dropzoneElement.style.height = `${newParentHeight}px`;
+      console.log(document.body);
 
     },
     ondropdeactivate: function (event) {
@@ -98,7 +123,9 @@ interact('.droppable')
 interact('.draggable')
   .draggable({
     inertia: true,
+
     autoScroll: true,
+
     listeners: { move: dragMoveListener }
   });
 
@@ -154,8 +181,8 @@ function invokeVirtualLink(fileName, content) {
 document.getElementById('export-button').addEventListener('click', function () {
 
   //invokeVirtualLink("export.dart", resultOutput);
-  console.log(projectPath,resultOutput)
-  synchronizeProject(projectPath,resultOutput);
+  console.log(projectPath, resultOutput)
+  synchronizeProject(projectPath, resultOutput);
 
 });
 
@@ -172,6 +199,9 @@ flutterElements.map(item => { return item.name; }).forEach((className) => {
 
     if (document.getElementById("main-dropzone").children.length === 0) {
 
+      let id = makeId(5)
+      clone.setAttribute('id',id)
+      interactedElements.push(id)
       document.getElementById("main-dropzone").appendChild(clone);
 
     } else {
@@ -207,11 +237,10 @@ window.addEventListener('message', event => {
 
       synchronizeProject(projectPath, flutterEmptySkeleton)
 
-    break;
+      break;
   }
 
 });
-
 
 
 document.getElementById('save-button').addEventListener('click', function () {
@@ -265,4 +294,16 @@ function synchronizeProject(projectPath, content) {
 
   });
 
+}
+
+
+function makeId(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * 
+ charactersLength));
+   }
+   return result;
 }
